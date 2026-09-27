@@ -1,0 +1,6 @@
+{
+    "watch": ["src", ".env", ".env_development", ".env_production"],
+    "ext": ".ts,.js,yaml,.env*",
+    "ignore": [],
+    "exec": "ts-node -r tsconfig-paths/register"  
+}
