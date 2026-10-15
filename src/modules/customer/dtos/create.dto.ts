@@ -17,7 +17,7 @@ export class CreateAddressDto {
   address!: string;
 
   @IsOptional()
-  @IsIn(["nha_rieng", "van_phong"], { message: "Loại địa chỉ phải là nha_rieng hoặc van_phong" })
+  @IsIn(["nha_rieng", "van_phong", "khac"], { message: "Loại địa chỉ phải là nha_rieng, van_phong hoặc khac" })
   address_type?: string;
 
   @IsOptional()

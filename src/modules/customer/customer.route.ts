@@ -28,6 +28,11 @@ class CustomerRoute implements IRoute {
       this.customerController.getById
     );
     this.router.get(
+      this.path + "/stats",
+      AuthMiddleware.authorization(true),
+      this.customerController.getStats
+    );
+    this.router.get(
       this.path + "/",
       AuthMiddleware.authorization(true),
       errorMiddleware(SearchDto, "query", true),

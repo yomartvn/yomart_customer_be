@@ -47,6 +47,20 @@ class CustomerController {
     }
   };
 
+  public getStats = async (req: Request, res: Response, next: NextFunction) => {
+    const seller_id = Number(req.seller_id);
+    const from_date = req.query.from_date as string | undefined;
+    const to_date = req.query.to_date as string | undefined;
+    try {
+      const result = await this.customerServices.getNewCustomerStats(seller_id, from_date, to_date);
+      if (result instanceof HttpException)
+        return sendResponse(res, result.status, result.message);
+      return sendResponse(res, 200, message.SEARCH_SUCCESS, result);
+    } catch (error) {
+      next(error);
+    }
+  };
+
   public getById = async (req: Request, res: Response, next: NextFunction) => {
     const id = parseInt(req.params.id, 10);
     if (isNaN(id)) return sendResponse(res, 400, message.INVALID_ID);

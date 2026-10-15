@@ -21,6 +21,42 @@ import { UpdateFromProfileByIDDto } from "./dtos/update-from-profile-by-id.dto";
 class CustomerServices {
   private tableName = databaseName.customer;
 
+  /** Đếm khách hàng mới theo khoảng ngày tạo (scoped seller). */
+  public getNewCustomerStats = async (
+    seller_id: number,
+    from_date?: string,
+    to_date?: string
+  ) => {
+    if (!seller_id) {
+      return new HttpException(400, customerMessages.SELLER_NOT_FOUND || "seller_id is required");
+    }
+
+    const params: (string | number)[] = [seller_id];
+    let whereSql = `WHERE c.seller_id = ?`;
+
+    if (from_date) {
+      const from = from_date.length === 10 ? `${from_date} 00:00:00` : from_date;
+      whereSql += ` AND c.created_at >= ?`;
+      params.push(from);
+    }
+    if (to_date) {
+      const to = to_date.length === 10 ? `${to_date} 23:59:59` : to_date;
+      whereSql += ` AND c.created_at <= ?`;
+      params.push(to);
+    }
+
+    const rows = (await database.executeQuery(
+      `SELECT COUNT(*) AS new_customers FROM ${this.tableName} c ${whereSql}`,
+      params
+    )) as RowDataPacket[];
+
+    return {
+      data: {
+        new_customers: Number(rows?.[0]?.new_customers) || 0,
+      },
+    };
+  };
+
   public getAll = async (searchDto: SearchDto, seller_id?: number, token?: string) => {
     const limit = Math.max(1, searchDto.limit ?? 10);
     const page = Math.max(1, searchDto.page ?? 1);
